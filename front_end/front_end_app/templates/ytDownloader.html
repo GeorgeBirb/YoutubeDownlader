@@ -1,0 +1,66 @@
+<!-- front_end_app/templates/ytDownloader.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Youtube Downloader</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        /* Your existing CSS styles */
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <h2 class="text-center">Youtube Downloader</h2>
+                <form method="post" id="ytDownloader-form">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <div class="text-center">
+                        <button type="button" class="btn btn-primary" onclick="submitForm()">Submit</button>
+                    </div>
+                </form>
+                <div id="loading-message" class="text-center" style="display: none;">
+                    <p>Please wait...</p>
+                </div>
+                <div id="result-message" class="mt-4 text-center" style="display: none;">
+                    <p>Succesfully Downloaded!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function submitForm() {
+            $('#loading-message').show(); // Show loading message
+
+            var form = $('#ytDownloader-form');
+            $.ajax({
+                type: form.attr('method'),
+                url: form.attr('action'),
+                data: form.serialize(),
+                success: function(response) {
+                    // Hide loading message
+                    $('#loading-message').hide();
+                    // Show result message
+                    $('#result-message').text(response.message).show();
+                    // Hide the message after 5 seconds
+                    setTimeout(function() {
+                        $('#result-message').fadeOut('slow');
+                    }, 5000); // 5000 milliseconds = 5 seconds
+                },
+                error: function(error) {
+                    console.log('Error:', error);
+                    // Hide loading message
+                    $('#loading-message').hide();
+                    // Show error message
+                    $('#result-message').text('An error occurred. Please try again.').show();
+                }
+            });
+        }
+    </script>
+</body>
+</html>
